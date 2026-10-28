@@ -86,14 +86,13 @@ app = Application.builder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("start", start_command))
 app.add_handler(CommandHandler("help", help_command))
-
+register_file_conversion_handlers(app)
 app.add_handler(
     MessageHandler(
         filters.TEXT & ~filters.COMMAND,
         handle_message,
     )
 )
-register_file_conversion_handlers(app)
 if __name__ == "__main__":
     logger.info("Assistant is running")
     app.run_polling()

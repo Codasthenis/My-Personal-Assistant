@@ -35,44 +35,63 @@ class ImageConversionError(Exception):
 def convert_image(
     image_data: bytes,
     target_format: str,
+    width: int | None = None,
+    height: int | None = None,
 ) -> tuple[bytes, str, str]:
-    """
-    Convert image bytes to a supported format.
+    """Convert an image, optionally resizing it."""
 
-    Returns:
-        (converted_bytes, output_filename, mime_type)
-    """
     target_format = target_format.upper()
 
     if target_format not in SUPPORTED_FORMATS:
         raise ImageConversionError("فرمت مقصد پشتیبانی نمی‌شود.")
 
+    if (width is None) != (height is None):
+        raise ImageConversionError("عرض و ارتفاع باید هر دو مشخص شوند.")
+
+    if width is not None and height is not None:
+        if not (1 <= width <= 4096 and 1 <= height <= 4096):
+            raise ImageConversionError(
+                "عرض و ارتفاع باید بین ۱ تا ۴۰۹۶ پیکسل باشند."
+            )
+
+        if width * height > 16_000_000:
+            raise ImageConversionError(
+                "ابعاد انتخاب‌شده بیش از حد بزرگ است."
+            )
+
     try:
         with Image.open(BytesIO(image_data)) as source:
-            # Apply EXIF rotation, if the image contains orientation metadata.
             image = ImageOps.exif_transpose(source)
             image.load()
 
             # Keep only the first frame of animated images.
-            # This converter produces a single-frame output.
-            if image.mode not in ("RGB", "RGBA"):
-                if "A" in image.getbands():
-                    image = image.convert("RGBA")
-                else:
-                    image = image.convert("RGB")
+            has_alpha = "A" in image.getbands()
+
+            if has_alpha:
+                image = image.convert("RGBA")
+            else:
+                image = image.convert("RGB")
+
+            if width is not None and height is not None:
+                image = image.resize(
+                    (width, height),
+                    Image.Resampling.LANCZOS,
+                )
 
             output = BytesIO()
             settings = {}
 
             if target_format == "JPG":
-                # JPEG does not support transparency.
                 if image.mode == "RGBA":
                     background = Image.new(
                         "RGB",
                         image.size,
                         (255, 255, 255),
                     )
-                    background.paste(image, mask=image.getchannel("A"))
+                    background.paste(
+                        image,
+                        mask=image.getchannel("A"),
+                    )
                     image = background
                 else:
                     image = image.convert("RGB")
@@ -80,14 +99,16 @@ def convert_image(
                 settings = {"quality": 90, "optimize": True}
 
             elif target_format == "BMP":
-                # Use RGB for broad BMP compatibility.
                 if image.mode == "RGBA":
                     background = Image.new(
                         "RGB",
                         image.size,
                         (255, 255, 255),
                     )
-                    background.paste(image, mask=image.getchannel("A"))
+                    background.paste(
+                        image,
+                        mask=image.getchannel("A"),
+                    )
                     image = background
                 else:
                     image = image.convert("RGB")
@@ -104,18 +125,14 @@ def convert_image(
                 **settings,
             )
 
-            output_info = SUPPORTED_FORMATS[target_format]
-            filename = f"converted.{output_info['extension']}"
+            info = SUPPORTED_FORMATS[target_format]
+            filename = f"converted.{info['extension']}"
 
-            return (
-                output.getvalue(),
-                filename,
-                output_info["mime_type"],
-            )
+            return output.getvalue(), filename, info["mime_type"]
 
     except (Image.DecompressionBombError, Image.DecompressionBombWarning):
         raise ImageConversionError(
-            "ابعاد تصویر بیش از حد بزرگ است."
+            "ابعاد تصویر ورودی بیش از حد بزرگ است."
         ) from None
     except (Image.UnidentifiedImageError, OSError, ValueError) as exc:
         raise ImageConversionError(
