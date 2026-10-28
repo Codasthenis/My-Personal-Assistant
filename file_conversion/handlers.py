@@ -379,13 +379,15 @@ def register_file_conversion_handlers(
     )
 
     # Only capture ordinary text when the user is entering dimensions.
-    dimension_filter = filters.create(
-        lambda message: (
-            message.from_user is not None
-            and message.from_user.id in AWAITING_DIMENSIONS
-        )
-    )
+    class DimensionFilter(filters.MessageFilter):
+        def filter(self, message):
+            return (
+                message.from_user is not None
+                and message.from_user.id in AWAITING_DIMENSIONS
+            )
 
+
+    dimension_filter = DimensionFilter()
     application.add_handler(
         MessageHandler(
             filters.TEXT & ~filters.COMMAND & dimension_filter,
