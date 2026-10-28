@@ -14,6 +14,7 @@ from exchange_rate import handle_bitcoin_price, handle_dollar_price, handle_gold
 from loader import TOKEN, logger
 from command_handlers import start_command, help_command
 from text_processing import detect_intent
+from file_conversion import register_file_conversion_handlers
 # =========================================
 # 1. Unified message router
 # =========================================
@@ -92,7 +93,7 @@ app.add_handler(
         handle_message,
     )
 )
-
+register_file_conversion_handlers(app)
 if __name__ == "__main__":
     logger.info("Assistant is running")
     app.run_polling()
