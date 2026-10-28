@@ -10,12 +10,12 @@ from telegram.ext import (
     filters,
 )
 
-from exchange_rate import *
-from loader import *
-from command_handlers import *
-from text_processing import *
+from exchange_rate import handle_bitcoin_price, handle_dollar_price, handle_gold_price
+from loader import TOKEN, logger
+from command_handlers import start_command, help_command
+from text_processing import detect_intent
 # =========================================
-# 6. Unified message router
+# 1. Unified message router
 # =========================================
 
 async def handle_message(
@@ -78,7 +78,7 @@ async def handle_message(
 
 
 # =========================================
-# 7. Application
+# 2. Application
 # =========================================
 
 app = Application.builder().token(TOKEN).build()
