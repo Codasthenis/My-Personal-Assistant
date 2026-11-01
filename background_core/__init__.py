@@ -1,1 +1,1 @@
-from .test import *
+from .post import *

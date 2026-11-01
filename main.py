@@ -91,7 +91,7 @@ async def post_init(application: Application):
     # first=10 یعنی اولین اجرا ۱۰ ثانیه بعد از روشن شدن ربات باشد
     application.job_queue.run_repeating(
         scheduled_post, 
-        interval=360, 
+        interval=3600, 
         first=10, 
         chat_id=target_chat_id,
         name="auto_poster"
