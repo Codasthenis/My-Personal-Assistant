@@ -82,23 +82,16 @@ async def handle_message(
 # =========================================
 # 2. Application
 # =========================================
-async def post_init(application: Application):
-    # تعیین کانال مقصد (آی‌دی عددی کانال یا یوزرنیم آن مثل @YourChannel)
-    target_chat_id = "@codas_universe"
-    
-    # اضافه کردن تسک به JobQueue
-    # مثلاً هر ۳۶۰۰ ثانیه (یک ساعت) یک‌بار اجرا شود
-    # first=10 یعنی اولین اجرا ۱۰ ثانیه بعد از روشن شدن ربات باشد
-    application.job_queue.run_repeating(
+
+app = Application.builder().token(TOKEN).build()
+target_chat_id = "@codas_universe"
+app.job_queue.run_repeating(
         scheduled_post, 
         interval=3600, 
         first=10, 
         chat_id=target_chat_id,
         name="auto_poster"
     )
-    return application
-app = Application.builder().token(TOKEN).build()
-app.post_init(post_init(app))
 
 app.add_handler(CommandHandler("start", start_command))
 app.add_handler(CommandHandler("help", help_command))
