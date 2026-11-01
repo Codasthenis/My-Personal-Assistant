@@ -96,7 +96,8 @@ async def post_init(application: Application):
         chat_id=target_chat_id,
         name="auto_poster"
     )
-app = Application.builder().token(TOKEN).post_init(post_init).build()
+app = Application.builder().token(TOKEN).build()
+app.post_init(post_init)
 
 app.add_handler(CommandHandler("start", start_command))
 app.add_handler(CommandHandler("help", help_command))
