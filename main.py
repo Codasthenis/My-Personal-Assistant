@@ -96,6 +96,7 @@ async def post_init(application: Application):
         chat_id=target_chat_id,
         name="auto_poster"
     )
+    return application
 app = Application.builder().token(TOKEN).build()
 app.post_init(post_init(app))
 
