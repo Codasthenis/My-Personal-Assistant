@@ -97,7 +97,7 @@ async def post_init(application: Application):
         name="auto_poster"
     )
 app = Application.builder().token(TOKEN).build()
-app.post_init(post_init)
+app.post_init(post_init(app))
 
 app.add_handler(CommandHandler("start", start_command))
 app.add_handler(CommandHandler("help", help_command))
