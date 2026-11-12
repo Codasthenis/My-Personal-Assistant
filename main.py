@@ -91,13 +91,13 @@ mini3 = Application.builder().token(TM3).build()
 mini4 = Application.builder().token(TM4).build()
 mini5 = Application.builder().token(TM5).build()
 target_chat_id = "@codas_universe"
-app.job_queue.run_repeating(
-        scheduled_post, 
-        interval=3600, 
-        first=10, 
-        chat_id=target_chat_id,
-        name="auto_poster"
-    )
+# app.job_queue.run_repeating(
+#         scheduled_post, 
+#         interval=3600, 
+#         first=10, 
+#         chat_id=target_chat_id,
+#         name="auto_poster"
+#     )
 
 app.add_handler(CommandHandler("start", start_command))
 app.add_handler(CommandHandler("help", help_command))
@@ -115,61 +115,11 @@ app.add_handler(
     )
 )
 
-import asyncio
-from telegram.error import NetworkError
-
-async def safe_init(bot_app, name):
-    for attempt in range(1, 4):
-        try:
-            await bot_app.initialize()
-            await bot_app.start()
-            logger.info(f"{name} initialized successfully.")
-            return
-        except NetworkError as e:
-            logger.warning(f"Network error on {name} (attempt {attempt}/3): {e}. Retrying in 2 seconds...")
-            await asyncio.sleep(2)
-    # اگر بعد از ۳ بار هم نشد، خطا را بالا بفرست
-    await bot_app.initialize()
-    await bot_app.start()
-
-async def run_all_bots():
-    # راه‌اندازی با فاصله و امن
-    await safe_init(app, "Main App")
-    await asyncio.sleep(1)
-    await safe_init(mini1, "Mini 1")
-    await asyncio.sleep(1)
-    await safe_init(mini2, "Mini 2")
-    await asyncio.sleep(1)
-    await safe_init(mini3, "Mini 3")
-    await asyncio.sleep(1)
-    await safe_init(mini4, "Mini 4")
-    await asyncio.sleep(1)
-    await safe_init(mini5, "Mini 5")
-    # شروع دریافت پیام‌ها
-    await app.updater.start_polling()
-    await mini1.updater.start_polling()
-    await mini2.updater.start_polling()
-    await mini3.updater.start_polling()
-    await mini4.updater.start_polling()
-    await mini5.updater.start_polling()
-    logger.info("All 3 bots are polling concurrently...")
-
-    stop_event = asyncio.Event()
-    try:
-        await stop_event.wait()
-    except (KeyboardInterrupt, SystemExit):
-        pass
-    finally:
-        logger.info("Stopping bots...")
-        for b in [app, mini1, mini2, mini3, mini4, mini5]:
-            if b.updater and b.updater.running:
-                await b.updater.stop()
-            await b.stop()
-            await b.shutdown()
-
-def main():
-    asyncio.run(run_all_bots())
-
-if __name__ == "__main__":
-    logger.info("Assistant is running")
-    main()
+BOT_APPLICATIONS = {
+    "bot1": app,
+    "bot2": mini1,
+    "bot3": mini2,
+    "bot4": mini3,
+    "bot5": mini4,
+    "bot6": mini5,
+}

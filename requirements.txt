@@ -3,3 +3,5 @@ python-dotenv
 requests
 Pillow
 python-telegram-bot[job-queue]
+fastapi
+uvicorn
