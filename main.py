@@ -106,7 +106,7 @@ register_file_conversion_handlers(app)
 
 mini1.add_handler(MessageHandler(filters.ChatType.CHANNEL, react("🔥")))
 mini2.add_handler(MessageHandler(filters.ChatType.CHANNEL, react("👍")))
-mini3.add_handler(MessageHandler(filters.ChatType.CHANNEL, react("🤣")))
+mini3.add_handler(MessageHandler(filters.ChatType.CHANNEL, react("❤️")))
 mini4.add_handler(MessageHandler(filters.ChatType.CHANNEL, react("💯")))
 mini5.add_handler(MessageHandler(filters.ChatType.CHANNEL, react("👏")))
 app.add_handler(
