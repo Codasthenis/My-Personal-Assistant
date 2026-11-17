@@ -103,6 +103,7 @@ app.add_handler(CommandHandler("start", start_command))
 app.add_handler(CommandHandler("help", help_command))
 register_file_conversion_handlers(app)
 # برای هر ربات، هندلر جداگانه بساز
+app.add_handler(MessageHandler(filters.ChatType.CHANNEL, react("🤣")))
 mini1.add_handler(MessageHandler(filters.ChatType.CHANNEL, react("🔥")))
 mini2.add_handler(MessageHandler(filters.ChatType.CHANNEL, react("👍")))
 mini3.add_handler(MessageHandler(filters.ChatType.CHANNEL, react("❤️")))
