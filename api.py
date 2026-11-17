@@ -46,7 +46,7 @@ async def lifespan(api_app: FastAPI):
 
         for bot_id, bot_app in BOT_APPLICATIONS.items():
             allowed_updates = (
-                ["message", "callback_query"]
+                ["message", "callback_query", "channel_post"]
                 if bot_id == "bot1"
                 else ["channel_post"]
             )
